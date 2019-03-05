@@ -2,13 +2,15 @@ version: "2.3"
 
 services:
   mariadb:
-    image: wodby/mariadb:10.2-3.0.2
+    image: wodby/mariadb:10.2-3.4.0
     env_file: ./.env
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 'true'
       MYSQL_DATABASE: ${DATABASE_NAME}
       MYSQL_USER: ${DATABASE_USER}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - '3306:3306'
     volumes:
       - mysqldata:/var/lib/mysql
     healthcheck:
@@ -17,7 +19,7 @@ services:
       retries: 10
 
   php:
-    image: wodby/drupal-php:7.0-2.4.3
+    image: wodby/drupal-php:7.1-4.12.2
     env_file: ./.env
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
@@ -27,17 +29,13 @@ services:
       DB_NAME: ${DATABASE_NAME}
       DB_DRIVER: mysql
     volumes:
-      - ./shell:/var/www/shell:cached
-      - ./:/var/www/html:cached
+      - ./:${DRUPAL_ROOT}:delegated
     depends_on:
-      - mariadb
-    healthcheck:
-      test: bash -c "[ -f /var/www/html/web ]"
-      timeout: 5s
-      retries: 100
+      mariadb:
+        condition: service_healthy
 
   nginx:
-    image: wodby/drupal-nginx:8-1.13-2.4.2
+    image: wodby/drupal-nginx:8-1.13-4.2.0
     env_file: ./.env
     depends_on:
       - php
@@ -45,9 +43,9 @@ services:
       NGINX_STATIC_CONTENT_OPEN_FILE_CACHE: "off"
       NGINX_ERROR_LOG_LEVEL: debug
       NGINX_BACKEND_HOST: php
-      NGINX_SERVER_ROOT: /var/www/html/web
+      NGINX_SERVER_ROOT: ${SERVER_ROOT}
     volumes:
-      - ./:/var/www/html:cached
+      - ./:${DRUPAL_ROOT}:delegated
     labels:
       - 'traefik.backend=nginx'
       - 'traefik.port=80'

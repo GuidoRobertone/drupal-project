@@ -32,6 +32,11 @@ NOTE: Use your own domain if you make changes in the copied `.env` file.
 
 Open your browser and point to `http://drupal.develop/` or the hostname you entered on the `.env` file.
 
+### Install Drupal-Composer
+```
+docker-compose exec --user=wodby php composer install
+```
+
 ### Shutting down the containers
 ```
 docker-compose down
