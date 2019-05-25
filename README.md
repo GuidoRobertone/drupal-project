@@ -37,7 +37,7 @@ mkdir -p config/sync
 
 Open your browser and point to `http://drupal.develop/` or the hostname you entered on the `.env` file.
 
-The Drupal8 install page `http://drupal.local/core/install.php` will be apparead.
+The Drupal8 installation page `http://drupal.develop/core/install.php` will appear.
 
 ### Install Drupal-Composer
 ```
