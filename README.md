@@ -30,7 +30,14 @@ NOTE: We suggest provide the detached mode flag to run in background.
 ```
 NOTE: Use your own domain if you make changes in the copied `.env` file.
 
+Create your config directory
+```
+mkdir -p config/sync
+```
+
 Open your browser and point to `http://drupal.develop/` or the hostname you entered on the `.env` file.
+
+The Drupal8 install page `http://drupal.local/core/install.php` will be apparead.
 
 ### Install Drupal-Composer
 ```
@@ -54,6 +61,21 @@ lsof -i :80
 
 # db (MySQL, MariaDB)
 lsof -i :3306
+```
+
+### Entering to the php container
+```
+docker-compose exec --user=wodby php sh
+```
+
+### Running Drupal Console
+```
+docker-compose exec --user=wodby php vendor/bin/drupal
+```
+
+### Running Drush
+```
+docker-compose exec --user=wodby php vendor/bin/drush
 ```
 
 We based the docker configuration of this repository on the [Drupal4Docker](https://github.com/wodby/docker4drupal) project.
