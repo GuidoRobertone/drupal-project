@@ -83,3 +83,7 @@ We based the docker configuration of this repository on the [Drupal4Docker](http
 We based the composer configuration on the [drupal-composer/drupal-project](https://github.com/drupal-composer/drupal-project) project.
 
 Click here for info about [composer](composer.md).
+
+### Nice to have:
+* Use [ahoy](https://ahoy-cli.readthedocs.io/en/latest/) to more easiest access.
+* Docker tags as environment variables.
