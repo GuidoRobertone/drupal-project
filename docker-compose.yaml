@@ -2,7 +2,7 @@ version: "2.3"
 
 services:
   mariadb:
-    image: wodby/mariadb:10.2-3.0.2
+    image: wodby/mariadb:$MARIADB_TAG
     env_file: ./.env
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 'true'
@@ -17,7 +17,7 @@ services:
       retries: 10
 
   php:
-    image: wodby/drupal-php:7.0-2.4.3
+    image: wodby/drupal-php:$PHP_TAG
     env_file: ./.env
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
@@ -37,7 +37,7 @@ services:
       retries: 100
 
   nginx:
-    image: wodby/drupal-nginx:8-1.13-2.4.2
+    image: wodby/nginx:$NGINX_TAG
     env_file: ./.env
     depends_on:
       - php
@@ -62,7 +62,7 @@ services:
       - 'traefik.frontend.rule=Host:mailhog.${HOST_NAME}'
 
   traefik:
-    image: traefik
+    image: traefik:$TRAEFIK_TAG
     env_file: ./.env
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
