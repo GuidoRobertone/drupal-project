@@ -1,44 +1,40 @@
-version: "2.3"
+version: "3"
 
 services:
   mariadb:
     image: wodby/mariadb:$MARIADB_TAG
-    env_file: ./.env
+    container_name: "${PROJECT_NAME}_mariadb"
+    stop_grace_period: 30s
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 'true'
-      MYSQL_DATABASE: ${DATABASE_NAME}
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: $DATABASE_NAME
+      MYSQL_USER: $DATABASE_USER
+      MYSQL_PASSWORD: $DATABASE_PASSWORD
     volumes:
       - mysqldata:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
   php:
     image: wodby/drupal-php:$PHP_TAG
-    env_file: ./.env
+    container_name: "${PROJECT_NAME}_php"
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
-      DB_HOST: ${DATABASE_HOST}
-      DB_USER: ${DATABASE_USER}
-      DB_PASSWORD: ${DATABASE_PASSWORD}
-      DB_NAME: ${DATABASE_NAME}
-      DB_DRIVER: mysql
+      DB_HOST: $DATABASE_HOST
+      DB_USER: $DATABASE_USER
+      DB_PASSWORD: $DATABASE_PASSWORD
+      DB_NAME: $DATABASE_NAME
+      DB_DRIVER: $DB_DRIVER
+      PHP_FPM_USER: wodby
+      PHP_FPM_GROUP: wodby
+      COLUMNS: 80 # Set 80 columns for docker exec -it.
     volumes:
       - ./shell:/var/www/shell:cached
       - ./:/var/www/html:cached
     depends_on:
       - mariadb
-    healthcheck:
-      test: bash -c "[ -f /var/www/html/web ]"
-      timeout: 5s
-      retries: 100
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
-    env_file: ./.env
+    container_name: "${PROJECT_NAME}_nginx"
     depends_on:
       - php
     environment:
@@ -49,21 +45,21 @@ services:
     volumes:
       - ./:/var/www/html:cached
     labels:
-      - 'traefik.backend=nginx'
+      - 'traefik.backend=${PROJECT_NAME}_nginx'
       - 'traefik.port=80'
       - 'traefik.frontend.rule=Host:${HOST_NAME}'
 
   mailhog:
     image: mailhog/mailhog
-    env_file: ./.env
+    container_name: "${PROJECT_NAME}_mailhog"
     labels:
-      - 'traefik.backend=mailhog'
+      - 'traefik.backend=${PROJECT_NAME}_mailhog'
       - 'traefik.port=8025'
       - 'traefik.frontend.rule=Host:mailhog.${HOST_NAME}'
 
   traefik:
     image: traefik:$TRAEFIK_TAG
-    env_file: ./.env
+    container_name: "${PROJECT_NAME}_traefik"
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
       - '${HOST_PORT}:80'
