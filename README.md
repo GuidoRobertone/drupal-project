@@ -15,7 +15,7 @@ cp .env.dist .env
 ### Edit configuration
 Edit the copied `.env` file and make changes according to your project needs.
 
-Example update default `HOST_NAME` from `drupal.develop` to `mysite.develop`.
+Example update default `PROJECT_BASE_URL` from `drupal_project.docker.localhost` to `my_site.docker.localhost`.
 
 ### Starting the containers
 To start the containers you need to execute the following command docker-compose up -d, grab some coffee or a beer and be patient while the images are downloaded to your local computer.
@@ -23,14 +23,6 @@ To start the containers you need to execute the following command docker-compose
 docker-compose up -d
 ```
 NOTE: We suggest provide the detached mode flag to run in background.
-
-### Add hostname entry in your `/etc/hosts` file
-```
-127.0.0.1    drupal.develop
-```
-NOTE: Use your own domain if you make changes in the copied `.env` file.
-
-Open your browser and point to `http://drupal.develop/` or the hostname you entered on the `.env` file.
 
 ### Shutting down the containers
 ```
